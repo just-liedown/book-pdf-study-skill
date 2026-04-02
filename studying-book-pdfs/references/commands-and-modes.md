@@ -45,6 +45,16 @@ Default teaching rule:
 - rewrite the content in clearer language
 - use the book only as source material, not as the primary presentation layer
 
+Long-chapter rule:
+
+- if the requested chapter or section is too large, split it into smaller teaching blocks
+- prefer existing subsections before inventing smaller cuts
+- if the subsection is still too dense, split again by topic or argument boundary
+- teach only one block per turn
+- stop and wait for an explicit `continue` before starting the next block
+
+Do not optimize for finishing a whole chapter in one response.
+
 If the source text came from OCR, make that explicit when OCR quality could affect correctness.
 
 ## Ask Mode

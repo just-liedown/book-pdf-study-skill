@@ -123,6 +123,16 @@ Default teaching styles by phase:
 
 Default output should feel like a teacher re-explaining the ideas, not like a summary that assumes the learner is looking at the source file.
 
+If a chapter or section is too large to teach cleanly in one turn:
+
+- split it into smaller teaching blocks
+- prefer existing subsection boundaries first
+- if a subsection is still too dense, split it again into smaller logical pieces
+- teach only the current block
+- stop after that block and wait for the learner to explicitly say `continue` before moving on
+
+Do not auto-advance through the rest of a long chapter just because more material remains.
+
 After each learn-mode turn, update `study-state.json` with the current stage, covered chapters, and mastery notes.
 
 ### Ask Mode
@@ -175,6 +185,7 @@ Keep the state file small and practical. It should at least track:
 - current level
 - active stage
 - chapter or topic progress
+- current lesson block when a long chapter has been split
 - mastery notes
 - test history
 

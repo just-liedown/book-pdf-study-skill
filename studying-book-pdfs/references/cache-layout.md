@@ -72,6 +72,7 @@ Recommended fields:
 - `current_level`
 - `current_stage`
 - `covered_chapters`
+- `current_lesson_block`
 - `mastery`
 - `weak_points`
 - `test_history`
