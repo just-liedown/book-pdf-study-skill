@@ -1,0 +1,168 @@
+---
+name: studying-book-pdfs
+description: Use when a user provides a long PDF that appears to be a book, textbook, manual, or study guide and wants structured learning help rather than one-off extraction. Trigger for requests that need one-time preprocessing, persistent study progress, goal-based depth selection, or explicit `/learn`, `/ask`, and `/test` study modes.
+---
+
+# Studying Book PDFs
+
+## Overview
+
+Use this skill to turn a book-like PDF into a reusable study workspace. Preprocess the PDF once, persist the cache, confirm the learner's target depth and current level, then operate through `/learn`, `/ask`, and `/test` without re-reading the whole document each turn.
+
+## Fit Check
+
+Use this skill only when the PDF is clearly book-like or the user intends to study it as a book.
+
+Strong signals:
+
+- Dozens of pages with chapter-like headings
+- A table of contents or numbered sections
+- Repeated teaching structure: definitions, examples, exercises, summaries
+- User asks to learn, study, review, master, prepare for interviews, or understand selected chapters
+
+Weak fit:
+
+- One-off reports, invoices, forms, slides, or papers the user only wants summarized once
+- Pure OCR image scans with no extractable text and no OCR workflow available
+
+If the fit is weak, say so and fall back to a normal PDF-reading workflow instead of forcing this skill.
+
+## Quick Start
+
+1. Check whether a cache already exists and still matches the PDF hash.
+2. If the cache is missing or stale, run:
+
+```bash
+python3 /path/to/studying-book-pdfs/scripts/preprocess_book_pdf.py "/path/to/book.pdf"
+```
+
+3. Read these files first:
+   - `manifest.json`
+   - `book-analysis.md`
+   - `study-state.json`
+   - `toc_candidates.txt` if the structure is still unclear
+4. Confirm two things before teaching:
+   - the target depth
+   - the learner's current level
+5. Work only through the explicit modes below.
+
+Detailed cache rules live in `references/cache-layout.md`.
+
+## Target Depth
+
+Always confirm the learner's goal before starting. Offer concrete options when the user has not specified one:
+
+- Introductory understanding
+- Selected chapters only
+- Systematic understanding
+- Interview readiness
+- Project application
+- Deep reading
+
+Also confirm the current level:
+
+- Zero background
+- Slight familiarity
+- Learned before but rusty
+- Already partway through the book
+
+Record both in `study-state.json`.
+
+## Study Modes
+
+Detailed mode behavior lives in `references/commands-and-modes.md`.
+
+### `/learn`
+
+Advance the learner through the current stage. Treat learning styles as phases, not mutually exclusive switches:
+
+1. Orientation
+2. Mapping
+3. Understanding
+4. Deepening
+5. Application
+6. Consolidation
+
+Default teaching styles by phase:
+
+- Mapping: outline-first
+- Understanding: close reading plus Feynman-style explanation
+- Deepening: Socratic questioning
+- Application: worked examples plus interview-style Q&A
+- Consolidation: flashcard-style recall
+
+After each `/learn` turn, update `study-state.json` with the current stage, covered chapters, and mastery notes.
+
+### `/ask`
+
+Use this for local confusion. Support both:
+
+- Precise references: pasted text, page number, paragraph, or quoted passage
+- Loose references: chapter, concept, topic, or theme
+
+When answering, cover:
+
+- what the passage says
+- where the likely confusion is
+- why the author might phrase it that way
+- how it connects to surrounding context and the whole book
+- a clearer restatement, and examples or counterexamples when useful
+
+Prefer targeted retrieval. Read only the relevant chunks or pages rather than the whole cache.
+
+### `/test`
+
+Run testing only on explicit user command. Test either:
+
+- the current stage
+- a chosen chapter
+- the chosen target depth
+
+After testing:
+
+- update mastery estimates
+- record weak points
+- recommend continue, review, or regress to an earlier stage
+
+Do not repeatedly interrupt the learner to ask whether they want a test.
+
+## Persistent State
+
+Keep the state file small and practical. It should at least track:
+
+- source PDF identity
+- target depth
+- current level
+- active stage
+- chapter or topic progress
+- mastery notes
+- test history
+
+If a state file already exists, continue from it unless the user asks to reset.
+
+## Retrieval Rules
+
+- Read `book-analysis.md` before making claims about difficulty or prerequisites.
+- Read `chunks.jsonl` or selected pages for `/ask` and focused `/learn`.
+- Read `study-state.json` before every response after preprocessing.
+- Avoid re-running the preprocessor unless the PDF changed or the user requests a rebuild.
+
+## Failure Handling
+
+- If `pdftotext` is missing, explain that preprocessing cannot run and suggest installing Poppler tools.
+- If the extracted text is nearly empty, explain that the PDF may be scanned and this skill's first version does not include OCR.
+- If the book structure is unclear, say that the structure confidence is low instead of inventing chapters.
+
+## Resources
+
+### `scripts/preprocess_book_pdf.py`
+
+Use this script for deterministic preprocessing and cache creation.
+
+### `references/cache-layout.md`
+
+Read when you need the exact artifact contract or rebuild rules.
+
+### `references/commands-and-modes.md`
+
+Read when you need the exact expectations for `/learn`, `/ask`, and `/test`.
