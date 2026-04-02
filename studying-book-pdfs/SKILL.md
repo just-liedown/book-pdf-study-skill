@@ -1,13 +1,13 @@
 ---
 name: studying-book-pdfs
-description: Use when a user provides a long PDF that appears to be a book, textbook, manual, or study guide and wants structured learning help rather than one-off extraction. Trigger for requests that need one-time preprocessing, persistent study progress, goal-based depth selection, or explicit `/learn`, `/ask`, and `/test` study modes.
+description: Use when a user provides a long PDF that appears to be a book, textbook, manual, or study guide and wants structured learning help rather than one-off extraction. Trigger for requests that need one-time preprocessing, persistent study progress, goal-based depth selection, or explicit learning, question, and testing modes expressed in normal language.
 ---
 
 # Studying Book PDFs
 
 ## Overview
 
-Use this skill to turn a book-like PDF into a reusable study workspace. Preprocess the PDF once, persist the cache, confirm the learner's target depth and current level, then operate through `/learn`, `/ask`, and `/test` without re-reading the whole document each turn. If the PDF is scanned or image-only, route it through the OCR branch before entering the study modes.
+Use this skill to turn a book-like PDF into a reusable study workspace. Preprocess the PDF once, persist the cache, confirm the learner's target depth and current level, then operate through learn mode, ask mode, and test mode without re-reading the whole document each turn. If the PDF is scanned or image-only, route it through the OCR branch before entering the study modes.
 
 ## Fit Check
 
@@ -38,7 +38,7 @@ python3 /path/to/studying-book-pdfs/scripts/preprocess_book_pdf.py "/path/to/boo
 
 3. If preprocessing reports that the extracted text is empty or nearly empty, stop the normal flow and switch to the OCR branch:
    - explain that the PDF appears scanned or image-only
-   - explain that `/learn`, `/ask`, and `/test` should wait until OCR text exists
+   - explain that learn mode, ask mode, and test mode should wait until OCR text exists
    - if no OCR workflow is available, say so explicitly instead of pretending the text is readable
 4. Read these files first:
    - `manifest.json`
@@ -49,6 +49,15 @@ python3 /path/to/studying-book-pdfs/scripts/preprocess_book_pdf.py "/path/to/boo
    - the target depth
    - the learner's current level
 6. Work only through the explicit modes below.
+
+Use natural-language mode requests instead of slash commands. Good examples:
+
+- `learn mode`
+- `ask mode`
+- `test mode`
+- `进入学习模式`
+- `进入问题模式`
+- `进入测试模式`
 
 Detailed cache rules live in `references/cache-layout.md`.
 
@@ -72,11 +81,25 @@ Also confirm the current level:
 
 Record both in `study-state.json`.
 
+## Teaching Stance
+
+Do not assume the learner is reading along with the PDF.
+
+Default teaching behavior:
+
+- explain in your own words first
+- reorganize the material into a clearer teaching order
+- prefer plain language over the book's phrasing
+- use fresh examples, analogies, and restatements
+- mention original terms, chapter names, or page locations only as optional reference points
+
+Avoid turning the interaction into guided book annotation unless the learner explicitly asks for close reading.
+
 ## Study Modes
 
 Detailed mode behavior lives in `references/commands-and-modes.md`.
 
-### `/learn`
+### Learn Mode
 
 Advance the learner through the current stage. Treat learning styles as phases, not mutually exclusive switches:
 
@@ -95,9 +118,11 @@ Default teaching styles by phase:
 - Application: worked examples plus interview-style Q&A
 - Consolidation: flashcard-style recall
 
-After each `/learn` turn, update `study-state.json` with the current stage, covered chapters, and mastery notes.
+Default output should feel like a teacher re-explaining the ideas, not like a summary that assumes the learner is looking at the PDF.
 
-### `/ask`
+After each learn-mode turn, update `study-state.json` with the current stage, covered chapters, and mastery notes.
+
+### Ask Mode
 
 Use this for local confusion. Support both:
 
@@ -114,13 +139,15 @@ When answering, cover:
 
 Prefer targeted retrieval. Read only the relevant chunks or pages rather than the whole cache.
 
+Answer the confusion directly. Do not make the learner compare your answer against the original wording unless they explicitly ask for a line-by-line explanation.
+
 If the active text came from OCR:
 
 - say that the explanation is based on OCR text
 - be cautious with formulas, code, tables, and uncommon terms
 - ask for an image snippet or quoted passage when the OCR text looks unreliable
 
-### `/test`
+### Test Mode
 
 Run testing only on explicit user command. Test either:
 
@@ -153,7 +180,7 @@ If a state file already exists, continue from it unless the user asks to reset.
 ## Retrieval Rules
 
 - Read `book-analysis.md` before making claims about difficulty or prerequisites.
-- Read `chunks.jsonl` or selected pages for `/ask` and focused `/learn`.
+- Read `chunks.jsonl` or selected pages for ask mode and focused learn mode.
 - Read `study-state.json` before every response after preprocessing.
 - Avoid re-running the preprocessor unless the PDF changed or the user requests a rebuild.
 - If the preprocessor indicates OCR is required, do not invent a normal-text reading path.
@@ -177,7 +204,7 @@ Read when you need the exact artifact contract or rebuild rules.
 
 ### `references/commands-and-modes.md`
 
-Read when you need the exact expectations for `/learn`, `/ask`, and `/test`.
+Read when you need the exact expectations for learn mode, ask mode, and test mode.
 
 ### `references/scanned-pdfs-and-ocr.md`
 

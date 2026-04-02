@@ -1,10 +1,22 @@
 # Commands And Modes
 
-This skill uses explicit commands so the learner stays in control.
+This skill uses explicit mode requests in normal language so the learner stays in control. Avoid slash commands because some chat surfaces reserve `/...` for platform commands before the skill can see them.
 
-## `/learn`
+## Accepted Mode Requests
 
-Use `/learn` to continue the planned study flow.
+Prefer plain text such as:
+
+- `learn mode`
+- `ask mode`
+- `test mode`
+- `enter learn mode`
+- `进入学习模式`
+- `进入问题模式`
+- `进入测试模式`
+
+## Learn Mode
+
+Use learn mode to continue the planned study flow.
 
 ### Required inputs
 
@@ -25,11 +37,17 @@ Use `/learn` to continue the planned study flow.
 - optional next-step recommendation
 - a state update written back to `study-state.json`
 
+Default teaching rule:
+
+- teach as if the learner is not looking at the PDF
+- rewrite the content in clearer language
+- use the book only as source material, not as the primary presentation layer
+
 If the source text came from OCR, make that explicit when OCR quality could affect correctness.
 
-## `/ask`
+## Ask Mode
 
-Use `/ask` for a confusing passage, concept, chapter, or statement.
+Use ask mode for a confusing passage, concept, chapter, or statement.
 
 ### Supported entry styles
 
@@ -51,15 +69,21 @@ Use `/ask` for a confusing passage, concept, chapter, or statement.
 - relation to surrounding context
 - clearer restatement and examples when useful
 
+Default explanation rule:
+
+- answer the confusion directly in your own words
+- do not require side-by-side reading of the original PDF
+- quote or dissect the original wording only when the learner explicitly asks for that style
+
 If OCR text is the source:
 
 - mention that the answer is based on OCR text
 - be extra careful with symbols, formulas, code, and tables
 - ask the learner for an image snippet if the extracted text looks suspicious
 
-## `/test`
+## Test Mode
 
-Use `/test` only when the learner explicitly asks for it.
+Use test mode only when the learner explicitly asks for it.
 
 ### Target types
 
@@ -74,7 +98,7 @@ Use `/test` only when the learner explicitly asks for it.
 - mastery update
 - recommendation: continue, review, or regress
 
-Do not run `/test` on obviously corrupted OCR text without warning the learner that input quality may distort the result.
+Do not run test mode on obviously corrupted OCR text without warning the learner that input quality may distort the result.
 
 ## Stage Ordering
 
@@ -87,7 +111,7 @@ Default stage order:
 5. Application
 6. Consolidation
 
-Assessment is an overlay triggered by `/test`, not a permanently active stage.
+Assessment is an overlay triggered by test mode, not a permanently active stage.
 
 ## OCR Branch
 
@@ -96,4 +120,4 @@ If preprocessing yields empty or near-empty text:
 1. Say that the PDF appears scanned or image-only.
 2. Say that the normal study flow should pause until OCR text exists.
 3. If no OCR workflow is available in the current environment, say so directly.
-4. Resume `/learn`, `/ask`, and `/test` only after OCR output is available.
+4. Resume learn mode, ask mode, and test mode only after OCR output is available.

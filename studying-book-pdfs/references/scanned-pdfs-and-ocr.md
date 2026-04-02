@@ -16,7 +16,7 @@ This skill's first version does not implement OCR itself. It should:
 
 1. detect the scanned-PDF condition
 2. stop the normal text-study flow
-3. explain that OCR is required before `/learn`, `/ask`, and `/test`
+3. explain that OCR is required before learn mode, ask mode, and test mode
 4. continue only after OCR text is available
 
 Do not pretend that image pages are readable text.

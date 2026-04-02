@@ -61,7 +61,7 @@ This file is not ground truth. Treat it as a starting point for later reasoning.
 
 ### `study-state.json`
 
-Persistent learner state. Keep it small and update it after `/learn` and `/test`.
+Persistent learner state. Keep it small and update it after learn mode and test mode.
 
 Recommended fields:
 
