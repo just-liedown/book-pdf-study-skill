@@ -267,7 +267,10 @@ def main() -> int:
 
     pages = extract_text(pdf_path)
     if not any(page.strip() for page in pages):
-        raise SystemExit("Extracted text is empty. The PDF may be scanned or image-only.")
+        raise SystemExit(
+            "Extracted text is empty. The PDF appears scanned or image-only and should "
+            "go through an OCR step before /learn, /ask, or /test can use it."
+        )
 
     chunks = chunk_pages(pages, args.chunk_size, args.chunk_overlap)
     toc_candidates = find_toc_candidates(pages)

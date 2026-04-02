@@ -7,7 +7,7 @@ description: Use when a user provides a long PDF that appears to be a book, text
 
 ## Overview
 
-Use this skill to turn a book-like PDF into a reusable study workspace. Preprocess the PDF once, persist the cache, confirm the learner's target depth and current level, then operate through `/learn`, `/ask`, and `/test` without re-reading the whole document each turn.
+Use this skill to turn a book-like PDF into a reusable study workspace. Preprocess the PDF once, persist the cache, confirm the learner's target depth and current level, then operate through `/learn`, `/ask`, and `/test` without re-reading the whole document each turn. If the PDF is scanned or image-only, route it through the OCR branch before entering the study modes.
 
 ## Fit Check
 
@@ -36,15 +36,19 @@ If the fit is weak, say so and fall back to a normal PDF-reading workflow instea
 python3 /path/to/studying-book-pdfs/scripts/preprocess_book_pdf.py "/path/to/book.pdf"
 ```
 
-3. Read these files first:
+3. If preprocessing reports that the extracted text is empty or nearly empty, stop the normal flow and switch to the OCR branch:
+   - explain that the PDF appears scanned or image-only
+   - explain that `/learn`, `/ask`, and `/test` should wait until OCR text exists
+   - if no OCR workflow is available, say so explicitly instead of pretending the text is readable
+4. Read these files first:
    - `manifest.json`
    - `book-analysis.md`
    - `study-state.json`
    - `toc_candidates.txt` if the structure is still unclear
-4. Confirm two things before teaching:
+5. Confirm two things before teaching:
    - the target depth
    - the learner's current level
-5. Work only through the explicit modes below.
+6. Work only through the explicit modes below.
 
 Detailed cache rules live in `references/cache-layout.md`.
 
@@ -110,6 +114,12 @@ When answering, cover:
 
 Prefer targeted retrieval. Read only the relevant chunks or pages rather than the whole cache.
 
+If the active text came from OCR:
+
+- say that the explanation is based on OCR text
+- be cautious with formulas, code, tables, and uncommon terms
+- ask for an image snippet or quoted passage when the OCR text looks unreliable
+
 ### `/test`
 
 Run testing only on explicit user command. Test either:
@@ -146,11 +156,13 @@ If a state file already exists, continue from it unless the user asks to reset.
 - Read `chunks.jsonl` or selected pages for `/ask` and focused `/learn`.
 - Read `study-state.json` before every response after preprocessing.
 - Avoid re-running the preprocessor unless the PDF changed or the user requests a rebuild.
+- If the preprocessor indicates OCR is required, do not invent a normal-text reading path.
 
 ## Failure Handling
 
 - If `pdftotext` is missing, explain that preprocessing cannot run and suggest installing Poppler tools.
-- If the extracted text is nearly empty, explain that the PDF may be scanned and this skill's first version does not include OCR.
+- If the extracted text is nearly empty, explain that the PDF appears scanned or image-only and should go through the OCR branch before study modes begin.
+- If OCR text exists but is visibly noisy, keep answers conservative and say that OCR quality may be the limiting factor.
 - If the book structure is unclear, say that the structure confidence is low instead of inventing chapters.
 
 ## Resources
@@ -166,3 +178,7 @@ Read when you need the exact artifact contract or rebuild rules.
 ### `references/commands-and-modes.md`
 
 Read when you need the exact expectations for `/learn`, `/ask`, and `/test`.
+
+### `references/scanned-pdfs-and-ocr.md`
+
+Read when preprocessing suggests the PDF is scanned or image-only, or when the learner provides page images instead of extractable text.

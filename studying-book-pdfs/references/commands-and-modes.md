@@ -25,6 +25,8 @@ Use `/learn` to continue the planned study flow.
 - optional next-step recommendation
 - a state update written back to `study-state.json`
 
+If the source text came from OCR, make that explicit when OCR quality could affect correctness.
+
 ## `/ask`
 
 Use `/ask` for a confusing passage, concept, chapter, or statement.
@@ -49,6 +51,12 @@ Use `/ask` for a confusing passage, concept, chapter, or statement.
 - relation to surrounding context
 - clearer restatement and examples when useful
 
+If OCR text is the source:
+
+- mention that the answer is based on OCR text
+- be extra careful with symbols, formulas, code, and tables
+- ask the learner for an image snippet if the extracted text looks suspicious
+
 ## `/test`
 
 Use `/test` only when the learner explicitly asks for it.
@@ -66,6 +74,8 @@ Use `/test` only when the learner explicitly asks for it.
 - mastery update
 - recommendation: continue, review, or regress
 
+Do not run `/test` on obviously corrupted OCR text without warning the learner that input quality may distort the result.
+
 ## Stage Ordering
 
 Default stage order:
@@ -78,3 +88,12 @@ Default stage order:
 6. Consolidation
 
 Assessment is an overlay triggered by `/test`, not a permanently active stage.
+
+## OCR Branch
+
+If preprocessing yields empty or near-empty text:
+
+1. Say that the PDF appears scanned or image-only.
+2. Say that the normal study flow should pause until OCR text exists.
+3. If no OCR workflow is available in the current environment, say so directly.
+4. Resume `/learn`, `/ask`, and `/test` only after OCR output is available.

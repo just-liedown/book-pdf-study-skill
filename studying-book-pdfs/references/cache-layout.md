@@ -73,6 +73,18 @@ Recommended fields:
 - `weak_points`
 - `test_history`
 
+### OCR branch artifacts
+
+If the book is scanned or image-only, keep OCR outputs in the same cache family rather than inventing a second storage layout.
+
+Recommended additional files:
+
+- `ocr-pages.jsonl`
+- `ocr-chunks.jsonl`
+- `ocr-confidence.json`
+
+Do not claim these files exist unless an OCR workflow has actually produced them.
+
 ## Rebuild Rules
 
 Rebuild the cache when:
@@ -82,3 +94,5 @@ Rebuild the cache when:
 - the user explicitly asks to rebuild
 
 Do not rebuild just because the user asks a different question about the same book.
+
+If the text cache is empty or nearly empty, treat that as a signal to route through the OCR branch instead of repeatedly retrying the same extraction.
