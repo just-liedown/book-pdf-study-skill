@@ -1,4 +1,4 @@
 interface:
-  display_name: "Study Book PDFs"
-  short_description: "Learn from long book-style PDF files"
-  default_prompt: "Use $studying-book-pdfs to help me study this book PDF."
+  display_name: "Study Book Materials"
+  short_description: "Learn from book-style PDF and Markdown files"
+  default_prompt: "Use $studying-book-pdfs to help me study this book-like PDF or Markdown file."

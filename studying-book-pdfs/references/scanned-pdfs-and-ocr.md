@@ -2,6 +2,8 @@
 
 Use this branch when preprocessing shows that the PDF is scanned, image-only, or otherwise yields little usable text.
 
+This branch only applies to PDF inputs. It does not apply to Markdown.
+
 ## Detection Signals
 
 Treat the PDF as a scanned or image-heavy document when one or more of these are true:

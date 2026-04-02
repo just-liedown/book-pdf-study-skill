@@ -2,6 +2,8 @@
 
 This skill uses explicit mode requests in normal language so the learner stays in control. Avoid slash commands because some chat surfaces reserve `/...` for platform commands before the skill can see them.
 
+These mode rules are source-agnostic. The same learn, ask, and test behavior should work after preprocessing a PDF or a Markdown file.
+
 ## Accepted Mode Requests
 
 Prefer plain text such as:
@@ -28,7 +30,7 @@ Use learn mode to continue the planned study flow.
 
 - `study-state.json`
 - `book-analysis.md`
-- selected sections from `chunks.jsonl`
+- selected chunks from `chunks.jsonl`
 
 ### Expected output
 
@@ -39,7 +41,7 @@ Use learn mode to continue the planned study flow.
 
 Default teaching rule:
 
-- teach as if the learner is not looking at the PDF
+- teach as if the learner is not looking at the source
 - rewrite the content in clearer language
 - use the book only as source material, not as the primary presentation layer
 
@@ -72,7 +74,7 @@ Use ask mode for a confusing passage, concept, chapter, or statement.
 Default explanation rule:
 
 - answer the confusion directly in your own words
-- do not require side-by-side reading of the original PDF
+- do not require side-by-side reading of the original source
 - quote or dissect the original wording only when the learner explicitly asks for that style
 
 If OCR text is the source:

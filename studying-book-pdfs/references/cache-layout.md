@@ -1,16 +1,16 @@
 # Cache Layout
 
-The preprocessor writes a stable cache directory for each PDF.
+The preprocessor writes a stable cache directory for each supported source file.
 
 ## Default Location
 
 If `--out-dir` is not supplied, write to:
 
 ```text
-<pdf-parent>/.book-pdf-study/<pdf-stem>-<sha256-prefix>/
+<source-parent>/.book-pdf-study/<source-stem>-<sha256-prefix>/
 ```
 
-Use the same cache directory until the source PDF hash changes.
+Use the same cache directory until the source file hash changes.
 
 ## Required Files
 
@@ -18,29 +18,32 @@ Use the same cache directory until the source PDF hash changes.
 
 Small machine-readable metadata:
 
-- `source_pdf`
-- `pdf_name`
+- `source_path`
+- `source_name`
+- `source_kind`
 - `file_hash`
-- `page_count`
+- `unit_count`
 - `generated_at`
 - `cache_dir`
 - `chunk_size`
 - `chunk_overlap`
 
-### `pages.jsonl`
+### `units.jsonl`
 
-One JSON object per page:
+One JSON object per logical source unit:
 
 ```json
-{"page": 1, "char_count": 1234, "text": "..."}
+{"unit_index": 1, "unit_type": "page", "label": "Page 1", "char_count": 1234, "text": "..."}
 ```
+
+PDF inputs also write `pages.jsonl` for compatibility. Markdown inputs also write `sections.jsonl`.
 
 ### `chunks.jsonl`
 
 One JSON object per retrieval chunk:
 
 ```json
-{"chunk_id": 1, "page_start": 1, "page_end": 1, "char_count": 950, "text": "..."}
+{"chunk_id": 1, "unit_start": 1, "unit_end": 1, "unit_type": "page", "label_start": "Page 1", "label_end": "Page 1", "char_count": 950, "text": "..."}
 ```
 
 ### `toc_candidates.txt`
@@ -83,13 +86,13 @@ Recommended additional files:
 - `ocr-chunks.jsonl`
 - `ocr-confidence.json`
 
-Do not claim these files exist unless an OCR workflow has actually produced them.
+Do not claim these files exist unless an OCR workflow has actually produced them. This branch applies to scanned PDFs, not Markdown.
 
 ## Rebuild Rules
 
 Rebuild the cache when:
 
-- the PDF hash changed
+- the source file hash changed
 - the cache is missing required files
 - the user explicitly asks to rebuild
 

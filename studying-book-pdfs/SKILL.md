@@ -1,21 +1,22 @@
 ---
 name: studying-book-pdfs
-description: Use when a user provides a long PDF that appears to be a book, textbook, manual, or study guide and wants structured learning help rather than one-off extraction. Trigger for requests that need one-time preprocessing, persistent study progress, goal-based depth selection, or explicit learning, question, and testing modes expressed in normal language.
+description: Use when a user provides a book-like learning material such as a PDF or Markdown file and wants structured learning help rather than one-off extraction. Trigger for requests that need one-time preprocessing, persistent study progress, goal-based depth selection, or explicit learning, question, and testing modes expressed in normal language.
 ---
 
-# Studying Book PDFs
+# Studying Book Materials
 
 ## Overview
 
-Use this skill to turn a book-like PDF into a reusable study workspace. Preprocess the PDF once, persist the cache, confirm the learner's target depth and current level, then operate through learn mode, ask mode, and test mode without re-reading the whole document each turn. If the PDF is scanned or image-only, route it through the OCR branch before entering the study modes.
+Use this skill to turn a book-like learning material into a reusable study workspace. Preprocess the source once, persist the cache, confirm the learner's target depth and current level, then operate through learn mode, ask mode, and test mode without re-reading the whole source each turn. This version explicitly supports PDF and Markdown. If a PDF is scanned or image-only, route it through the OCR branch before entering the study modes.
 
 ## Fit Check
 
-Use this skill only when the PDF is clearly book-like or the user intends to study it as a book.
+Use this skill only when the source is clearly book-like or the user intends to study it as a book.
 
 Strong signals:
 
 - Dozens of pages with chapter-like headings
+- Markdown headings that form chapter or section structure
 - A table of contents or numbered sections
 - Repeated teaching structure: definitions, examples, exercises, summaries
 - User asks to learn, study, review, master, prepare for interviews, or understand selected chapters
@@ -25,18 +26,19 @@ Weak fit:
 - One-off reports, invoices, forms, slides, or papers the user only wants summarized once
 - Pure OCR image scans with no extractable text and no OCR workflow available
 
-If the fit is weak, say so and fall back to a normal PDF-reading workflow instead of forcing this skill.
+If the fit is weak, say so and fall back to a normal file-reading workflow instead of forcing this skill.
 
 ## Quick Start
 
-1. Check whether a cache already exists and still matches the PDF hash.
+1. Check whether a cache already exists and still matches the source file hash.
 2. If the cache is missing or stale, run:
 
 ```bash
-python3 /path/to/studying-book-pdfs/scripts/preprocess_book_pdf.py "/path/to/book.pdf"
+python3 /path/to/studying-book-pdfs/scripts/preprocess_book_material.py "/path/to/book.pdf"
+python3 /path/to/studying-book-pdfs/scripts/preprocess_book_material.py "/path/to/book.md"
 ```
 
-3. If preprocessing reports that the extracted text is empty or nearly empty, stop the normal flow and switch to the OCR branch:
+3. If preprocessing reports that a PDF extracted text is empty or nearly empty, stop the normal flow and switch to the OCR branch:
    - explain that the PDF appears scanned or image-only
    - explain that learn mode, ask mode, and test mode should wait until OCR text exists
    - if no OCR workflow is available, say so explicitly instead of pretending the text is readable
@@ -60,6 +62,7 @@ Use natural-language mode requests instead of slash commands. Good examples:
 - `进入测试模式`
 
 Detailed cache rules live in `references/cache-layout.md`.
+Read `references/scanned-pdfs-and-ocr.md` only for the scanned-PDF branch. It does not apply to Markdown.
 
 ## Target Depth
 
@@ -83,7 +86,7 @@ Record both in `study-state.json`.
 
 ## Teaching Stance
 
-Do not assume the learner is reading along with the PDF.
+Do not assume the learner is reading along with the source material.
 
 Default teaching behavior:
 
@@ -118,7 +121,7 @@ Default teaching styles by phase:
 - Application: worked examples plus interview-style Q&A
 - Consolidation: flashcard-style recall
 
-Default output should feel like a teacher re-explaining the ideas, not like a summary that assumes the learner is looking at the PDF.
+Default output should feel like a teacher re-explaining the ideas, not like a summary that assumes the learner is looking at the source file.
 
 After each learn-mode turn, update `study-state.json` with the current stage, covered chapters, and mastery notes.
 
@@ -167,7 +170,7 @@ Do not repeatedly interrupt the learner to ask whether they want a test.
 
 Keep the state file small and practical. It should at least track:
 
-- source PDF identity
+- source file identity
 - target depth
 - current level
 - active stage
@@ -180,23 +183,27 @@ If a state file already exists, continue from it unless the user asks to reset.
 ## Retrieval Rules
 
 - Read `book-analysis.md` before making claims about difficulty or prerequisites.
-- Read `chunks.jsonl` or selected pages for ask mode and focused learn mode.
+- Read `chunks.jsonl` or selected pages or sections for ask mode and focused learn mode.
 - Read `study-state.json` before every response after preprocessing.
-- Avoid re-running the preprocessor unless the PDF changed or the user requests a rebuild.
+- Avoid re-running the preprocessor unless the source file changed or the user requests a rebuild.
 - If the preprocessor indicates OCR is required, do not invent a normal-text reading path.
 
 ## Failure Handling
 
-- If `pdftotext` is missing, explain that preprocessing cannot run and suggest installing Poppler tools.
+- If `pdftotext` is missing, explain that PDF preprocessing cannot run and suggest installing Poppler tools.
 - If the extracted text is nearly empty, explain that the PDF appears scanned or image-only and should go through the OCR branch before study modes begin.
 - If OCR text exists but is visibly noisy, keep answers conservative and say that OCR quality may be the limiting factor.
 - If the book structure is unclear, say that the structure confidence is low instead of inventing chapters.
 
 ## Resources
 
+### `scripts/preprocess_book_material.py`
+
+Use this script for deterministic preprocessing of PDF and Markdown sources.
+
 ### `scripts/preprocess_book_pdf.py`
 
-Use this script for deterministic preprocessing and cache creation.
+Use this compatibility wrapper only if an older workflow still references the PDF-only script name.
 
 ### `references/cache-layout.md`
 
